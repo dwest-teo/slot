@@ -74,28 +74,28 @@ class App extends Component {
       positions: [],
     }
 
-    this.randPositionValue = this.randPositionValue.bind(this);
-    this.randState = this.randState.bind(this);
+    this.randomizeSlotPosition = this.randomizeSlotPosition.bind(this);
+    this.randomizeReels = this.randomizeReels.bind(this);
     this.spinReels = this.spinReels.bind(this);
-    this.winMessage = this.winMessage.bind(this);
+    this.selectWinMessage = this.selectWinMessage.bind(this);
   }
 
-  randPositionValue() {
+  randomizeSlotPosition() {
     return Math.floor(Math.random() * 3);
   }
 
-  randState() {
+  randomizeReels() {
     return [
-      this.randPositionValue(),
-      this.randPositionValue(),
-      this.randPositionValue(),
+      this.randomizeSlotPosition(),
+      this.randomizeSlotPosition(),
+      this.randomizeSlotPosition(),
     ];
   }
 
   spinReels() {
     let count = 0;
-    let currentState = this.randState();
-    const finalState = this.randState();
+    let currentState = this.randomizeReels();
+    const finalState = this.randomizeReels();
 
     const spin = () => {
       let nextState = currentState;
@@ -130,7 +130,7 @@ class App extends Component {
     spin();
   }
 
-  winMessage(position) {
+  selectWinMessage(position) {
     const messages = [
       'You won a cup of coffee',
       'You won a cup of tea',
@@ -141,7 +141,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.setState({ positions: this.randState() });
+    this.setState({ positions: this.randomizeReels() });
   }
 
   render() {
@@ -151,7 +151,7 @@ class App extends Component {
     let winMsg = '';
 
     if (isWin && this.state.isFinal) {
-      winMsg = this.winMessage(pos[0]);
+      winMsg = this.selectWinMessage(pos[0]);
     }
 
     return (
