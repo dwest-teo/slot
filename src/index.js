@@ -23,7 +23,7 @@ const slotItems = {
 const SlotItem = (reel, position) => slotItems[`slot${reel}`][position];
 
 const Slot = ({ reel, position }) => (
-  <div className="slot-reel">
+  <div className="reel">
     <svg viewBox="0 0 256 256">
       {SlotItem(reel, position)}
     </svg>

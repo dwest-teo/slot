@@ -20,7 +20,7 @@ body {
   margin-bottom: 2rem;
 }
 
-.slot-reel {
+.reel {
   height: 300px;
   width: 300px;
   overflow: hidden;
