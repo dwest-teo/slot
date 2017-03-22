@@ -27,6 +27,28 @@ body {
   background-size: cover;
 }
 
+.reel-item {
+  opacity: 0;
+  animation-name: flicker;
+  animation-duration: .4s;
+  animation-fill-mode: forwards;
+  animation-timing-function: steps(7);
+}
+
 .spin-button {
   margin-bottom: 2rem;
+}
+
+
+/* Animations */
+@keyframes flicker {
+  0% { opacity: 0 }
+  12.5% { opacity: .25 }
+  25% { opacity: 0 }
+  37.5% { opacity: 0 }
+  50% { opacity: .75 }
+  62.5% { opacity: 0 }
+  75% { opacity: 1 }
+  87.5% { opacity: .5 }
+  100% { opacity: 1 }
 }

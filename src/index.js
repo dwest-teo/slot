@@ -24,7 +24,7 @@ const SlotItem = (reel, position) => slotItems[`slot${reel}`][position];
 
 const Slot = ({ reel, position }) => (
   <div className="reel">
-    <svg viewBox="0 0 256 256">
+    <svg viewBox="0 0 256 256" className="reel-item">
       {SlotItem(reel, position)}
     </svg>
   </div>
@@ -57,14 +57,15 @@ SpinButton.propTypes = {
   handler: PropTypes.func,
 };
 
-const Message = ({ winMessage }) => (
-  <div>
-    <span>{winMessage}</span>
+const Message = ({ winner, message }) => (
+  <div className={`message-outer win-${winner}`}>
+    <span className={`message win-${winner}`}>{message}</span>
   </div>
 );
 
 Message.propTypes = {
-  winMessage: PropTypes.string,
+  winner: PropTypes.bool,
+  message: PropTypes.string,
 };
 
 class App extends Component {
@@ -72,12 +73,14 @@ class App extends Component {
     super(props);
     this.state = {
       positions: [],
+      winner: false,
+      message: 'Spin Away!',
     }
 
     this.randomizeSlotPosition = this.randomizeSlotPosition.bind(this);
     this.randomizeReels = this.randomizeReels.bind(this);
     this.spinReels = this.spinReels.bind(this);
-    this.selectWinMessage = this.selectWinMessage.bind(this);
+    this.selectMessage = this.selectMessage.bind(this);
   }
 
   randomizeSlotPosition() {
@@ -94,50 +97,55 @@ class App extends Component {
 
   spinReels() {
     let count = 0;
-    let currentState = this.randomizeReels();
-    const finalState = this.randomizeReels();
+    const initial = this.randomizeReels();
+    const result = this.randomizeReels();
 
     const spin = () => {
-      let nextState = currentState;
-      let hasChanged = false;
+      const positions = initial;
+      let spinning = false;
 
       for (let i = 0; i < 3; i++) {
-        if (count < 9 || currentState[i] !== finalState[i]) {
-          nextState[i] = (currentState[i] + 1) % 3;
-          hasChanged = true;
-          console.log('spinning');
-        }
-
-        if (count >= 9) {
-          console.log('stop spinning');
+        if (count < 9 || initial[i] !== result[i]) {
+          positions[i] = (initial[i] + 1) % 3;
+          spinning = true;
         }
       }
 
-      this.setState({
-        positions: nextState,
-        isFinal: !hasChanged,
-      });
+      this.setState({ positions });
 
-      if (!hasChanged) {
+      if (!spinning) {
+        const winner = positions.every((val, i, arr) => val === arr[0]);
+        const message = this.selectMessage(winner, positions[0]);
+
+        this.setState({ winner, message });
         return;
       }
 
-      currentState = this.state.positions;
-      setTimeout(spin, 100);
       count++;
+      setTimeout(spin, 100);
     }
 
     spin();
   }
 
-  selectWinMessage(position) {
-    const messages = [
+  selectMessage(win, position) {
+    const winMessages = [
       'You won a cup of coffee',
       'You won a cup of tea',
       'You won an espresso',
     ];
 
-    return messages[position];
+    const loseMessages = [
+      'Thirsty for more?',
+      'Better luck next time',
+      'Spin it to win it!',
+    ];
+
+    if (win) {
+      return winMessages[position];
+    }
+
+    return loseMessages[Math.floor(Math.random() * loseMessages.length)];
   }
 
   componentDidMount() {
@@ -145,21 +153,14 @@ class App extends Component {
   }
 
   render() {
-    const pos = this.state.positions;
-    const isWin = (pos[0] === pos[1]) && (pos[1] === pos[2]);
-
-    let winMsg = '';
-
-    if (isWin && this.state.isFinal) {
-      winMsg = this.selectWinMessage(pos[0]);
-    }
+    const { positions, winner, message } = this.state;
 
     return (
       <div className="App">
         <section className="machine">
-          <Reels positions={pos} />
+          <Reels positions={positions} />
           <SpinButton handler={this.spinReels} />
-          <Message winMessage={winMsg} />
+          <Message winner={winner} message={message} />
         </section>
       </div>
     );
